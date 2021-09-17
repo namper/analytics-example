@@ -33,7 +33,7 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
         print(average)
         if not average:
             raise Http404
-        return Response(data=average.values('day', 'avg_likes'))
+        return Response(data=average.values('date', 'avg_likes'))
 
     def get_latest(self, lookup: str):
         """ Returns the latest post object or raises 404 error """

@@ -25,8 +25,8 @@ class PostQuerySet(models.QuerySet):
         # 2. group by creation day
         # 4. annotate each day by average likes count
         return post_from_lat_30_days.annotate(
-            day=functions.TruncDate('created')
-        ).values('day').annotate(
+            date=functions.TruncDate('created')
+        ).values('date').annotate(
             avg_likes=models.Avg('likes_count'))
 
     def get_latest(self, post_id: int = None, user_id: int = None):
