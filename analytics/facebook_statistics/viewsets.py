@@ -16,12 +16,18 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
     serializer_class = PostSerializer
 
     @action(methods=('get',), detail=True)
-    def get_latest(self, _request: Request, **__) -> Response:
-        latest_post: Post = self.get_latest_post()
+    def get_latest_by_post_id(self, _request: Request, **__) -> Response:
+        latest_post: Post = self.get_latest('post_id')
         serializer = self.get_serializer(latest_post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def get_latest_post(self):
+    @action(methods=('get',), detail=True)
+    def get_latest_by_user_id(self, _request: Request, **__) -> Response:
+        latest_post: Post = self.get_latest('user_id')
+        serializer = self.get_serializer(latest_post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_latest(self, lookup: str):
         """ Returns the latest post object or raises 404 error """
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -35,7 +41,7 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
                 (self.__class__.__name__, lookup_url_kwarg)
         )
 
-        filter_kwargs = {'post_id': self.kwargs[lookup_url_kwarg]}
+        filter_kwargs = {lookup: self.kwargs[lookup_url_kwarg]}
         try:
             obj = queryset.get_latest(**filter_kwargs)
         except queryset.model.DoesNotExist:
