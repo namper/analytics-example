@@ -27,6 +27,14 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
         serializer = self.get_serializer(latest_post)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(methods=('get',), detail=True)
+    def get_average_statistics(self, _request: Request, pk: int):
+        average = self.get_queryset().last_30_day_average(user_id=pk)
+        print(average)
+        if not average:
+            raise Http404
+        return Response(data=average.values('day', 'avg_likes'))
+
     def get_latest(self, lookup: str):
         """ Returns the latest post object or raises 404 error """
         queryset = self.filter_queryset(self.get_queryset())
